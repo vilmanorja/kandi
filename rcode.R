@@ -1,17 +1,69 @@
-setwd("/m/home/home3/33/norjav2/unix/Documents/kandi_local/kandi")
+#setwd("/m/home/home3/33/norjav2/unix/Documents/kandi_local/kandi")
 
-data <- read.table(file = "anjala.csv", header = TRUE, sep = ",", col.names = 
-                     c('Year', 'Month', 'Day', 'Hour', 'Time zone', 'Temperature'))
+setwd("C:/Users/vilma/OneDrive - Aalto University/Yliopisto/Kandi")
+
+library(ggplot2)
+library(dplyr)
+library(forecast)
+library(carData)
+library(car)
+library(lmtest)
+library(tseries)
+
+data <- read.table(file = "anjaladata.csv", header = TRUE, sep= ",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
+data$Date <- as.Date(with(data, paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
 
 data_july <- data[data$Month == "7",]
+data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), rep(1980,10*31), rep(1990,10*31), rep(2000,10*31), rep(2010,10*31), rep(2020,2*31))
 
-data_july2 <- data.frame(data_july$Year, data_july$Temperature)
+temp = ts(data_july$Celcius, start = 1959, frequency = 31)
 
-temp_ts = ts(data_july$Temperature, start = 1959, frequency = 31)
+ts.plot(temp, xlab = "Year",
+        ylab = "Celcius")
 
-ts.plot(temp_ts, xlab = 'Year', ylab = 'top temperature/Celcius')
+#mean_temp <- aggregate(data_july$Celcius, list(data_july$Year), FUN=mean)
+mean <- data_july%>% group_by(Year)%>%summarise(mean_val=mean(Celcius))
+ggplot(data_july, aes(Date, Celcius)) + geom_point(aes(colour=Year)) + geom_hline(data = mean, aes(yintercept = mean_val)) + facet_grid(~Year, scales = "free_x") + labs(y = "Temperature (\u00B0C)")
 
-mean_temp <- aggregate(data_july2$data_july.Temperature, list(data_july2$data_july.Year), FUN = mean)
-group <- aggregate(data_july2$data_july.Temperature, list(data_july2$data_july.Year))
+ts.plot(ts(mean$mean_val, start = 1959, frequency = 1))
+#one year of each decade
+data_10 <- filter(data_july, Year == "1961" | Year == "1971" | Year == "1981" | Year == "1991" | Year == "2001" | Year == "2011" | Year == "2021")
+mean_10 <- data_10%>% group_by(Year)%>%summarise(mean_val_10=mean(Celcius))
+ggplot(data_10, aes(Day, Celcius)) + geom_point(aes(colour=Year)) + geom_hline(data = mean_10, aes(yintercept = mean_val_10, col=Year)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)")
 
-plot(mean_temp)
+#Compare two different decades
+data_compare1 <- filter(data_july, Year == "1970" | Year == "1971" | Year == "1972" | Year == "1973" | Year == "1974" | Year == "1975" | Year == "1976" | Year == "1977" | Year == "1978" | Year == "1979" |
+                          Year == "2010" | Year == "2011" | Year == "2012" | Year == "2013" | Year == "2014" | Year == "2015" | Year == "2016" | Year == "2017" | Year == "2018" | Year == "2019")
+mean_compare1 <- data_compare1%>% group_by(Year)%>%summarise(mean_val_comp1=mean(Celcius))
+ggplot(data_compare1, aes(Day, Celcius)) + geom_point(aes(colour=Year)) + geom_hline(data = mean_compare1, aes(yintercept = mean_val_comp1, col=Year)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)", colour = "Year")
+
+data_compare2 <- filter(data_july, Group == "1960" | Group == "2010")
+mean_compare2 <- data_compare2%>% group_by(Group)%>%summarise(mean_val_comp2=mean(Celcius))
+ggplot(data_compare2, aes(Date, Celcius, colour=Group)) + geom_point() + geom_hline(data = mean_compare2, aes(yintercept = mean_val_comp2, col=Group)) + facet_grid(~Group, scales = "free_x") + labs(x = "Year", y = "Temperature (\u00B0C)", colour = "Decades")
+
+#Decades
+mean_byDecade <- data_july%>% group_by(Group)%>%summarise(mean_val_dec=mean(Celcius))
+ggplot(data_july, aes(Date, Celcius)) + geom_point(aes(colour=Group)) + geom_hline(data = mean_byDecade, aes(yintercept = mean_val_dec, col=Group), size=1) + facet_grid(~Group, scales = "free_x") + labs(x = "Date", y = "Temperature (\u00B0C)", colour = "Decades")
+
+#Stationarize
+acf(temp, lag.max=168)
+acf(temp, lag.max=168, type = "partial")
+#2.5806
+d = 1 # Differoinnin kertaluku d
+S = 0 # Kausidifferoinnin jakso S
+D = 0 # Kausidifferensoinnin kertaluku D (1,168,4)
+dtemp = temp
+if (d > 0) {
+  dtemp = diff(dtemp, lag = 1, differences = d)
+}
+if (D > 0) {
+  dtemp = diff(dtemp, lag = S, differences = D)
+}
+
+acf(dtemp, lag.max=168) #2.5484
+acf(dtemp, lag.max=168, type = "partial")
+
+auto.arima(temp)
+
+ts.plot(dtemp,
+        xlab = "year, dtemp")
