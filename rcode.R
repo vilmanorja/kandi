@@ -9,6 +9,7 @@ library(carData)
 library(car)
 library(lmtest)
 library(tseries)
+library(gridExtra)
 
 data <- read.table(file = "anjaladata.csv", header = TRUE, sep= ",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
 data$Date <- as.Date(with(data, paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
@@ -29,17 +30,29 @@ ts.plot(ts(mean$mean_val, start = 1959, frequency = 1))
 #one year of each decade
 data_10 <- filter(data_july, Year == "1961" | Year == "1971" | Year == "1981" | Year == "1991" | Year == "2001" | Year == "2011" | Year == "2021")
 mean_10 <- data_10%>% group_by(Year)%>%summarise(mean_val_10=mean(Celcius))
-ggplot(data_10, aes(Day, Celcius)) + geom_point(aes(colour=Year)) + geom_hline(data = mean_10, aes(yintercept = mean_val_10, col=Year)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)")
+ggplot(data_10, aes(Day, Celcius)) + geom_point(color = 'darkrblue') + geom_hline(data = mean_10, aes(yintercept = mean_val_10)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)")
 
 #Compare two different decades
-data_compare1 <- filter(data_july, Year == "1970" | Year == "1971" | Year == "1972" | Year == "1973" | Year == "1974" | Year == "1975" | Year == "1976" | Year == "1977" | Year == "1978" | Year == "1979" |
-                          Year == "2010" | Year == "2011" | Year == "2012" | Year == "2013" | Year == "2014" | Year == "2015" | Year == "2016" | Year == "2017" | Year == "2018" | Year == "2019")
+data_compare1 <- filter(data_july, Group == "1970" | Group == "2010")
 mean_compare1 <- data_compare1%>% group_by(Year)%>%summarise(mean_val_comp1=mean(Celcius))
 ggplot(data_compare1, aes(Day, Celcius)) + geom_point(aes(colour=Year)) + geom_hline(data = mean_compare1, aes(yintercept = mean_val_comp1, col=Year)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)", colour = "Year")
 
+
+comp_1 <- filter(data_july, Group == "1970")
+mean_1 <- comp_1%>% group_by(Year)%>%summarise(mean_val_1=mean(Celcius))
+ggp1 <- ggplot(comp_1, aes(Day, Celcius)) + geom_point(colour= 'darkred') + geom_hline(data = mean_1, aes(yintercept = mean_val_1)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)") + ylim(5,35)
+
+
+comp_2 <- filter(data_july, Group == "2010")
+mean_2 <- comp_2%>% group_by(Year)%>%summarise(mean_val_2=mean(Celcius))
+ggp2 <- ggplot(comp_2, aes(Day, Celcius)) + geom_point(colour= 'darkblue') + geom_hline(data = mean_2, aes(yintercept = mean_val_2)) + facet_grid(~Year, scales = "free_x")  + labs(y = "Temperature (\u00B0C)") + ylim(5,35)
+
+
+grid.arrange(ggp1, ggp2, ncol = 2)
+
 data_compare2 <- filter(data_july, Group == "1960" | Group == "2010")
 mean_compare2 <- data_compare2%>% group_by(Group)%>%summarise(mean_val_comp2=mean(Celcius))
-ggplot(data_compare2, aes(Date, Celcius, colour=Group)) + geom_point() + geom_hline(data = mean_compare2, aes(yintercept = mean_val_comp2, col=Group)) + facet_grid(~Group, scales = "free_x") + labs(x = "Year", y = "Temperature (\u00B0C)", colour = "Decades")
+ggplot(data_compare2, aes(Date, Celcius, colour=Group)) + geom_point() + geom_hline(data = mean_compare2, aes(yintercept = mean_val_comp2, col=Group)) + facet_grid(~Group, scales = "free_x") + labs(x = "Year", y = "Temperature (\u00B0C)", colour = "Decade")
 
 #Decades
 mean_byDecade <- data_july%>% group_by(Group)%>%summarise(mean_val_dec=mean(Celcius))
