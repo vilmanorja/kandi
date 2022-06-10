@@ -62,9 +62,9 @@ ggplot(data_july, aes(Date, Celcius)) + geom_point(aes(colour=Group)) + geom_hli
 acf(temp, lag.max=168)
 acf(temp, lag.max=168, type = "partial")
 #2.5806
-d = 1 # Differoinnin kertaluku d
-S = 0 # Kausidifferoinnin jakso S
-D = 0 # Kausidifferensoinnin kertaluku D (1,168,4)
+d = 1
+S = 0 
+D = 0 
 dtemp = temp
 if (d > 0) {
   dtemp = diff(dtemp, lag = 1, differences = d)
@@ -75,8 +75,6 @@ if (D > 0) {
 
 acf(dtemp, lag.max=168) #2.5484
 acf(dtemp, lag.max=168, type = "partial")
-
-auto.arima(temp)
 
 ts.plot(dtemp,
         xlab = "year, dtemp")
