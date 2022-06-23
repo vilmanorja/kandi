@@ -1,27 +1,27 @@
-setwd("/m/home/home3/33/norjav2/data/Documents/kandi_local/kandi/code")
-
-#read data
-data <- read.table(file = "anjala.csv", header = TRUE, sep = ",", col.names = 
-                     c('Year', 'Month', 'Day', 'Hour', 'Time zone', 'Celcius'))
-#setwd("C:/Users/vilma/OneDrive - Aalto University/Yliopisto/Kandi")
-
-library(ggplot2)
-library(dplyr)
-#library(forecast)
-#library(carData)
-#library(car)
-#library(lmtest)
-#library(tseries)
-library(gridExtra)
-library(scales)
-
-#theme_update(plot.title = element_text(hjust = 0.5))
-#data <- read.table(file = "anjaladata.csv", header = TRUE, sep= ",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
-data$Date <- as.Date(with(data, paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
-
-#remove and edit data
-data_july <- data[data$Month == "7",]
-data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), rep(1980,10*31), rep(1990,10*31), rep(2000,10*31), rep(2010,10*31), rep(2020,2*31))
+# setwd("/m/home/home3/33/norjav2/data/Documents/kandi_local/kandi/code")
+# 
+# #read data
+# data <- read.table(file = "anjala.csv", header = TRUE, sep = ",", col.names = 
+#                      c('Year', 'Month', 'Day', 'Hour', 'Time zone', 'Celcius'))
+# #setwd("C:/Users/vilma/OneDrive - Aalto University/Yliopisto/Kandi")
+# 
+# library(ggplot2)
+# library(dplyr)
+# #library(forecast)
+# #library(carData)
+# #library(car)
+# #library(lmtest)
+# #library(tseries)
+# library(gridExtra)
+# library(scales)
+# 
+# #theme_update(plot.title = element_text(hjust = 0.5))
+# #data <- read.table(file = "anjaladata.csv", header = TRUE, sep= ",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
+# data$Date <- as.Date(with(data, paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
+# 
+# #remove and edit data
+# data_july <- data[data$Month == "7",]
+# data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), rep(1980,10*31), rep(1990,10*31), rep(2000,10*31), rep(2010,10*31), rep(2020,2*31))
 
 # temp = ts(data_july$Celcius, start = 1959, frequency = 31)
 # 
@@ -115,26 +115,26 @@ data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), rep(1980,10
 #plot(mean_temp)
 
 #10 year periods from 1962
-data_july$Group2 <- c(rep(0,3*31), rep(1962,10*31), rep(1972,10*31), rep(1982,10*31), rep(1992,10*31), rep(2002,10*31), rep(2012,10*31))
-data_jul_dec <- filter(data_july, Group2 == "1962" | Group2 == "1972" | Group2 == "1982" | Group2 == "1992" | Group2 == "2002" |Group2 == "2012")
-mean_by_dec <- data_jul_dec%>% group_by(Group2)%>%summarise(mean_val_dec=mean(Celcius))
-x <- mean_by_dec[2]
-d <- sum(x[2:6,]-x[1:5,])*1/5
-data_jul_dec$h <- c(rep(x[1,1],10*31),rep(x[1,1]+d,10*31),rep(x[1,1]+2*d,10*31),rep(x[1,1]+3*d,10*31),rep(x[1,1]+4*d,10*31),rep(x[1,1]+5*d,10*31))
-ggplot(data_jul_dec, aes(Date, Celcius)) + geom_point(aes(colour=Year)) + 
-  scale_x_date(date_breaks = "3 years" , date_labels = "%Y") +
-  geom_hline(data = mean_by_dec, aes(yintercept = mean_val_dec), size=1) + 
-  facet_grid(~Group2, scales = "free_x") + 
-  labs(title = "Maximum daily temperatures in July in Anjala", x = "Date", y = "Temperature (\u00B0C)")
-
-plot(data_jul_dec$Date, data_jul_dec$Celcius)
-lines(data_jul_dec$Date, data_jul_dec$h, lwd=2.0)
+# data_july$Group2 <- c(rep(0,3*31), rep(1962,10*31), rep(1972,10*31), rep(1982,10*31), rep(1992,10*31), rep(2002,10*31), rep(2012,10*31))
+# data_jul_dec <- filter(data_july, Group2 == "1962" | Group2 == "1972" | Group2 == "1982" | Group2 == "1992" | Group2 == "2002" |Group2 == "2012")
+# mean_by_dec <- data_jul_dec%>% group_by(Group2)%>%summarise(mean_val_dec=mean(Celcius))
+# x <- mean_by_dec[2]
+# d <- sum(x[2:6,]-x[1:5,])*1/5
+# data_jul_dec$h <- c(rep(x[1,1],10*31),rep(x[1,1]+d,10*31),rep(x[1,1]+2*d,10*31),rep(x[1,1]+3*d,10*31),rep(x[1,1]+4*d,10*31),rep(x[1,1]+5*d,10*31))
+# ggplot(data_jul_dec, aes(Date, Celcius)) + geom_point(aes(colour=Year)) + 
+#   scale_x_date(date_breaks = "3 years" , date_labels = "%Y") +
+#   geom_hline(data = mean_by_dec, aes(yintercept = mean_val_dec), size=1) + 
+#   facet_grid(~Group2, scales = "free_x") + 
+#   labs(title = "Maximum daily temperatures in July in Anjala", x = "Date", y = "Temperature (\u00B0C)")
+# 
+# plot(data_jul_dec$Date, data_jul_dec$Celcius)
+# lines(data_jul_dec$Date, data_jul_dec$h, lwd=2.0)
 
 #y_centered2 <- data_jul_dec$Celcius-as.numeric(data_jul_dec$h)
-y_centered <- as.numeric(data_jul_dec$Celcius-c(rep(0,10*31),rep(d,10*31),rep(2*d,10*31),rep(3*d,10*31),rep(4*d,10*31),rep(5*d,10*31)))
-
-#moment estimator
-n <- length(data_jul_dec$Celcius)
+# y_centered <- as.numeric(data_jul_dec$Celcius-c(rep(0,10*31),rep(d,10*31),rep(2*d,10*31),rep(3*d,10*31),rep(4*d,10*31),rep(5*d,10*31)))
+# 
+# #moment estimator
+# n <- length(data_jul_dec$Celcius)
 
 m_n <- function(data, n, k, j){
   data_ordered <- sort(data, decreasing = FALSE)[(n-k):n]
@@ -144,15 +144,15 @@ m_n <- function(data, n, k, j){
 gamma_m <- function(data, n, k) {
   m_n_1 <- m_n(data, n, k, 1)
   m_n_2 <- m_n(data, n, k, 2)
-  m_n_1+1-(1/2)*(1-((m_n_1^2)/m_n_2))^(-1)
+  m_n_1+1-0.5*(1-(m_n_1^2/m_n_2))^(-1)
 }
 
-values_gamma_m <- rep(0,n-1)
-for (k in 1:(n-1)) {
-  values_gamma_m[k] <- gamma_m(y_centered, n, k)
-}
+# values_gamma_m <- rep(0,n-1)
+# for (k in 1:(n-1)) {
+#   values_gamma_m[k] <- gamma_m(y_centered, n, k)
+# }
 
-plot(values_gamma_m, type = 'l')
+# plot(values_gamma_m, type = 'l')
 #for(k in 1:(n-1)){
 #  y_ordered <- sort(y_centered,decreasing = FALSE)[(n-k):n]
 #  m_n_1 <- 1/k*sum((log(y_ordered)-log(y_ordered[1]))[-1])
@@ -174,17 +174,17 @@ plot(values_gamma_m, type = 'l')
 sigma_m <- function(data, n, k) {
   m_n_1 <- m_n(data, n, k, 1)
   m_n_2 <- m_n(data, n, k, 2)
-  gamma_minus <-1-(1/2)*(1-(m_n_1^2/m_n_2))^(-1)
+  gamma_minus <-1-0.5*(1-(m_n_1^2/m_n_2))^(-1)
   data_ordered <- sort(data, decreasing = FALSE)[(n-k):n]
   data_ordered[1]*m_n_1*(1-gamma_minus)
 }
 
-values_sigma_m <- rep(0,n-1)
-for (k in 1:(n-1)) {
-  values_sigma_m[k] <- sigma_m(y_centered, n, k)
-}
-
-plot(values_sigma_m, type = 'l')
+# values_sigma_m <- rep(0,n-1)
+# for (k in 1:(n-1)) {
+#   values_sigma_m[k] <- sigma_m(y_centered, n, k)
+# }
+# 
+# plot(values_sigma_m, type = 'l')
 
 # #check <- rep(0,n-1)
 # for(k in 1:(n-1)){
@@ -200,24 +200,42 @@ plot(values_sigma_m, type = 'l')
 # hist(sigma_m)
 
 #prob. est.
-n <- length(data_jul_dec$Celcius)
-sigma_m <- rep(0,n-1)
-gamma_m <- rep(0,n-1)
-p_estim <-rep(0,n-1)
-for(k in 1:(n-1)){
-  y_ordered <- sort(y_centered,decreasing = FALSE)[(n-k):n]
-  m_n_1 <- mean((log(y_ordered)-log(y_ordered[1]))[-1])
-  m_n_2 <- mean(((log(y_ordered)-log(y_ordered[1]))[-1])^2)
-  gamma_minus <-1-(1/2)*(1-(m_n_1^2/m_n_2))^(-1)
-  gamma_m[k] <- m_n_1+1-(1/2)*(1-((m_n_1^2)/m_n_2))^(-1)
-  sigma_m[k] <- y_ordered[1]*m_n_1*(1-gamma_minus)
-  p_estim[k] <- (k/n)*((((37-6*d-y_ordered[1])*gamma_m[k])/sigma_m[k])+1)^(-1/gamma_m[k])
+p_estim <- function(data, n, k, t, h) {
+  gamma <- gamma_m(data, n, k)
+  data_ordered <- sort(data, decreasing = FALSE)[(n-k):n]
+  (k/n)*max(0,(((t-h-data_ordered[1])*gamma/sigma_m(data, n, k))+1))^(-1/gamma)
 }
-plot(gamma_m, type = 'l')
-plot(sigma_m, type = 'l')
-plot(p_estim, type = 'l')
 
-k <- 500
-p_estim <- (k/n)*-3.227986^(-1/gamma_m[k])
+#quantile estimator
+p_q <- function(data, n, k, p) {
+  gamma <- gamma_m(data, n, k)
+  data_ordered <- sort(data, decreasing = FALSE)[(n-k):n]
+  data_ordered[1]+sigma_m(data,n,k)*((k/(n*p))^gamma-1)/gamma
+}
 
-#
+# n <- length(data_jul_dec$Celcius)
+# sigma_m <- rep(0,n-1)
+# gamma_m <- rep(0,n-1)
+# p_estim <-rep(0,n-1)
+# for(k in 1:(n-1)){
+#   y_ordered <- sort(y_centered,decreasing = FALSE)[(n-k):n]
+#   m_n_1 <- mean((log(y_ordered)-log(y_ordered[1]))[-1])
+#   m_n_2 <- mean(((log(y_ordered)-log(y_ordered[1]))[-1])^2)
+#   gamma_minus <-1-(1/2)*(1-(m_n_1^2/m_n_2))^(-1)
+#   gamma_m[k] <- m_n_1+1-(1/2)*(1-((m_n_1^2)/m_n_2))^(-1)
+#   sigma_m[k] <- y_ordered[1]*m_n_1*(1-gamma_minus)
+#   p_estim[k] <- (k/n)*((((37-6*d-y_ordered[1])*gamma_m[k])/sigma_m[k])+1)^(-1/gamma_m[k])
+# }
+# plot(gamma_m, type = 'l')
+# plot(sigma_m, type = 'l')
+# plot(p_estim, type = 'l')
+# 
+# k <- 500
+# p_estim <- (k/n)*-3.227986^(-1/gamma_m[k])
+
+#probability estimator when gamma=0
+p_estim_zero <- function(data, n, k, t, h) {
+  data_ordered <- sort(data, decreasing = FALSE)[(n-k):n]
+  (k/n)*exp(-(t-h-data_ordered[1])/sigma_m(data,n,k))
+}
+
