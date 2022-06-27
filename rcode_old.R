@@ -18,12 +18,15 @@ library(gridExtra)
 library(scales)
 
 theme_update(plot.title = element_text(hjust = 0.5))
-#data <- read.table(file = "anjaladata.csv", header = TRUE, sep= ",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
+#data <- read.table(file = "anjaladata.csv", header = TRUE, sep = 
+#",", col.names = c('Year','Month', "Day", "hour", "aikavyohyke", 'Celcius'))
 data$Date <- as.Date(with(data, paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
 
 #remove and edit data
 data_july <- data[data$Month == "7",]
-data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), rep(1980,10*31), rep(1990,10*31), rep(2000,10*31), rep(2010,10*31), rep(2020,2*31))
+data_july$Group <- c(rep(1959,31), rep(1960,10*31), rep(1970,10*31), 
+                     rep(1980,10*31), rep(1990,10*31), rep(2000,10*31), 
+                     rep(2010,10*31), rep(2020,2*31))
 
 temp = ts(data_july$Celcius, start = 1959, frequency = 31)
 
@@ -35,19 +38,25 @@ mean <- data_july%>% group_by(Year)%>%summarise(mean_val=mean(Celcius))
 ggplot(data_july, aes(Date, Celcius)) + geom_point(aes(colour=Year)) + 
   geom_hline(data = mean, aes(yintercept = mean_val)) + 
   facet_grid(~Year, scales = "free_x") + 
-  labs(title = "Maximum daily temperatures in July in Anjala", x = "Day (July)", y = "Temperature (\u00B0C)")
+  labs(title = "Maximum daily temperatures in July in Anjala", x = "Day (July)",
+       y = "Temperature (\u00B0C)")
 
 ts.plot(ts(mean$mean_val, start = 1959, frequency = 1))
 #one year of each decade
-data_10 <- filter(data_july, Year == "1961" | Year == "1971" | Year == "1981" | Year == "1991" | Year == "2001" | Year == "2011" | Year == "2021")
+data_10 <- filter(data_july, Year == "1961" | Year == "1971" | 
+                    Year == "1981" | Year == "1991" | Year == "2001" | 
+                    Year == "2011" |Year == "2021")
 mean_10 <- data_10%>% group_by(Year)%>%summarise(mean_val_10=mean(Celcius))
 ggplot(data_10, aes(Day, Celcius)) + geom_point(color = 'darkblue') + 
   geom_hline(data = mean_10, aes(yintercept = mean_val_10)) + 
   facet_grid(~Year, scales = "free_x")  + 
-  labs(title = "Maximum daily temperatures in July in Anjala", x = "Day (July)", y = "Temperature (\u00B0C)")
+  labs(title = "Maximum daily temperatures in July in Anjala", x = "Day (July)",
+       y = "Temperature (\u00B0C)")
 
 #suomeksi
-data_10 <- filter(data_july, Year == "1961" | Year == "1971" | Year == "1981" | Year == "1991" | Year == "2001" | Year == "2011" | Year == "2021")
+data_10 <- filter(data_july, Year == "1961" | Year == "1971" | 
+                    Year == "1981" | Year == "1991" | Year == "2001" |
+                    Year == "2011" | Year == "2021")
 mean_10 <- data_10%>% group_by(Year)%>%summarise(mean_val_10=mean(Celcius))
 ggplot(data_10, aes(Day, Celcius)) + geom_point(color = 'darkgreen') + 
   geom_hline(data = mean_10, aes(yintercept = mean_val_10)) + 
