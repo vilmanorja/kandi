@@ -1,5 +1,3 @@
-#old version
-
 setwd("/m/home/home3/33/norjav2/unix/Documents/kandi_local/kandi")
 
 #read data
