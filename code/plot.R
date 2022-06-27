@@ -155,20 +155,37 @@ for (k in 1:(l - 1)) {
 
 plot(values_sigma_m, type = "l", xlab = "k", ylab = "scale estimator (mom.)")
 
-n <- 734
-values_p_estim <- rep(0, n - 1)
-for (k in 1:(n - 1)) {
-  values_p_estim[k] <- p_estim(y_centered, l, 1000, k, 40, 6 * d)
-}
-plot(values_p_estim, type = "l", xlab = "k", ylab = "p estim.", main =
-       "Probability for T=33 \u00B0C")
-p_hat <- values_p_estim[10:(n - 1)]
-mean(p_hat)
-median(p_hat)
-max(p_hat)
-min(p_hat)
+values_median <- rep(0, 10)
+values_mean <- rep(0, 10)
+values_min <- rep(0, 10)
+values_max <- rep(0, 10)
+k_range <- c(1096, 919, 734, 566, 437, 317, 214, 124, 73, 31)
+temp <- 33:42
 
-#T=33, n <- 1096, median 0.02369829
-#T=34, n <- 919, median 0.0156573
-#T=35, n <- 734, median 0.01072835
-#T=36
+for (i in 1:10) {
+  values_p_estim <- rep(0, k_range[i] - 1)
+  for (k in 1:(k_range[i] - 1)) {
+    values_p_estim[k] <- p_estim(y_centered, l, 1000, k, temp[i], 6 * d)
+  }
+  hist(values_p_estim[10:(k_range[i] - 1)])
+  # plot(values_p_estim, type = "l", xlab = "k", ylab = "p estim.", main =
+  #        paste("Probability for T = ", temp[i], " \u00B0C"))
+  # values_median[i] <- p_10(median(values_p_estim[10:(k_range[i] - 1)]))
+  # values_mean[i] <- p_10(mean(values_p_estim[10:(k_range[i] - 1)]))
+  # values_min[i] <- p_10(min(values_p_estim[10:(k_range[i] - 1)]))
+  # values_max[i] <- p_10(max(values_p_estim[10:(k_range[i] - 1)]))
+}
+
+table <- data.frame(temp, values_min, values_median, values_mean, values_max)
+names(table) <- c("Temperature", "Min", "Median", "Max")
+
+#T = 33, n <- 1096, median 0.02369829
+#T = 34, n <- 919, median 0.0156573
+#T = 35, n <- 734, median 0.01072835
+#T = 36, n <- 566, median 0.006619595
+#T = 37, n <- 437, median 0.003813095
+#T = 38, n <- 317, median 0.001848534
+#T = 39, n <- 214, median 0.0008450508
+#T = 40, n <- 124, median 0.0004226507
+#T = 41, n <- 73, median 7.087633e-05
+#T = 42, n <- 31, median 2.085661e-05

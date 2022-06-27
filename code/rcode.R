@@ -29,6 +29,11 @@ p_estim <- function(data, n, k_1, k_2, t, h) {
                        sigma_m(data, n, k_1)) + 1))^(-1 / gamma)
 }
 
+# Prob. for ten years
+p_10 <- function(p_hat) {
+  1-(1-p_hat)^310
+}
+
 # #quantile estimator for testing
 # p_q <- function(data, n, k, p) {
 #   gamma <- gamma_m(data, n, k)
